@@ -9,7 +9,7 @@ namespace WallBuildChecker.InputServices
     public class WallDataFileInput : IWallDataInput
     {
         private string FilePath;
-        
+
         public WallDataFileInput(string filePath)
         {
             this.FilePath = filePath;
@@ -25,36 +25,39 @@ namespace WallBuildChecker.InputServices
             }
 
             var lines = GetFileLines(file);
-            
+
             int.TryParse(lines[0].Split(" ")[1], out int linesToSkip);
             linesToSkip++;
             int.TryParse(lines[linesToSkip], out int brickSortQuantity);
             linesToSkip++;
-            
+
             var brickSorts = new List<BrickSort>();
-            
+
             foreach (var s in lines.Skip(linesToSkip))
             {
                 var brickSortProperties = s.Split(" ");
                 int.TryParse(brickSortProperties[0], out int height);
                 int.TryParse(brickSortProperties[1], out int width);
                 int.TryParse(brickSortProperties[2], out int quantity);
-                
-                brickSorts.Add(new BrickSort(width, height, quantity));
+
+                for (int i = 0; i < quantity; i++)
+                {
+                    brickSorts.Add(new BrickSort(width, height));
+                }
             }
 
-            return brickSorts;
+            return brickSorts.OrderByDescending(s => s.Height * s.Width).ToList();
         }
 
         public WallPattern GetWallPattern()
         {
             var file = TryOpenFile(FilePath);
-            
+
             if (file == null)
             {
                 return null;
             }
-            
+
             var lines = GetFileLines(file);
 
             var arraySize = lines[0].Split(" ");
@@ -80,7 +83,7 @@ namespace WallBuildChecker.InputServices
 
             return new WallPattern(wallPattern);
         }
-        
+
         private StreamReader TryOpenFile(string filePath)
         {
             try

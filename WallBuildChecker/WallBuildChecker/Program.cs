@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using WallBuildChecker.InputServices;
 using WallBuildChecker.Interfaces;
+using WallBuildChecker.WallBuildServices;
 
 namespace WallBuildChecker
 {
@@ -18,14 +19,14 @@ namespace WallBuildChecker
                 int.TryParse(Console.ReadLine(), out option);
             }
 
-            IWallDataInput dataInput;
-            WallPattern wallPattern;
-            List<BrickSort> bricks;
-            
+            IWallDataInput dataInput = null;
+            WallPattern wallPattern = null;
+            List<BrickSort> bricks = null;
+
             if (option == 1)
             {
                 dataInput = new WallDataManualInput();
-                
+
                 wallPattern = dataInput.GetWallPattern();
                 bricks = dataInput.GetBricks();
             }
@@ -37,10 +38,16 @@ namespace WallBuildChecker
                                   "which directory starts with disk name.");
 
                 dataInput = new WallDataFileInput(Console.ReadLine() + ".txt");
-                
+
                 wallPattern = dataInput.GetWallPattern();
                 bricks = dataInput.GetBricks();
             }
+            
+            
+            
+            var wallBuildService = new WallBuildService();
+
+            wallBuildService.TryToBuildWall(wallPattern, bricks);
         }
     }
 }

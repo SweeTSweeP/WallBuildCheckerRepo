@@ -4,13 +4,11 @@
     {
         public int Width { get; set; }
         public int Height { get; set; }
-        public int Quantity { get; set; }
 
-        public BrickSort(int width, int height, int quantity)
+        public BrickSort(int width, int height)
         {
             this.Width = width;
             this.Height = height;
-            this.Quantity = quantity;
         }
     }
 }
