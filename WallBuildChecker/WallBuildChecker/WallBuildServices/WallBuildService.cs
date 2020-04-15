@@ -10,9 +10,10 @@ namespace WallBuildChecker.WallBuildServices
             foreach (var brickSort in brickSorts)
             {
                 var indexes = GetIndexesToPutShape(wallPattern, brickSort);
+                PutShape(indexes, wallPattern);
             }
 
-            return false;
+            return IsItFilled(wallPattern);
         }
 
         private List<(int, int)> GetIndexesToPutShape(WallPattern wallPattern, BrickSort brickSort)
@@ -67,17 +68,31 @@ namespace WallBuildChecker.WallBuildServices
 
             int indI = indexI;
             int indJ = indexJ;
-            
-            for (int i = 0; i < brickSort.Height; i++)
+
+            int height = 0;
+            int width = 0;
+
+            if (brickSort.Height > brickSort.Width)
             {
-                for (int j = 0; j < brickSort.Width; j++)
+                height = brickSort.Width;
+                width = brickSort.Height;
+            }
+            else
+            {
+                height = brickSort.Height;
+                width = brickSort.Width;
+            }
+
+            for (int i = 0; i < height; i++)
+            {
+                for (int j = 0; j < width; j++)
                 {
-                    if (indJ + 1 > brickSort.Width && j < brickSort.Width - 1)
+                    if (indJ + 1 > wallPattern.Pattern.GetLength(1) && j <= width - 1)
                     {
                         return null;
                     }
 
-                    if (wallPattern.Pattern[indI, indexJ] == WallPart.Fill)
+                    if (wallPattern.Pattern[indI, indJ] == WallPart.Fill)
                     {
                         shapeIndexes.Add((indI, indJ));
                         indJ++;
@@ -88,7 +103,7 @@ namespace WallBuildChecker.WallBuildServices
                     }
                 }
 
-                if (indI + 1 > brickSort.Height && i < brickSort.Height - 1)
+                if (indI + 1 >= wallPattern.Pattern.GetLength(0) && i <= height - 1)
                 {
                     return null;
                 }
@@ -110,19 +125,33 @@ namespace WallBuildChecker.WallBuildServices
 
             int indI = indexI;
             int indJ = indexJ;
-            
-            for (int j = 0; j < brickSort.Height; j++)
+
+            int height = 0;
+            int width = 0;
+
+            if (brickSort.Width > brickSort.Height)
             {
-                for (int i = 0; i < brickSort.Width; i++)
+                height = brickSort.Width;
+                width = brickSort.Height;
+            }
+            else
+            {
+                height = brickSort.Height;
+                width = brickSort.Width;
+            }
+
+            for (int j = 0; j < height; j++)
+            {
+                for (int i = 0; i < width; i++)
                 {
                     if (indJ + 1 > brickSort.Width && i < brickSort.Width - 1)
                     {
                         return null;
                     }
 
-                    if (wallPattern.Pattern[indI, indexJ] == WallPart.Fill)
+                    if (wallPattern.Pattern[indI, indJ] == WallPart.Fill)
                     {
-                        shapeIndexes.Add((indJ, indI));
+                        shapeIndexes.Add((indI, indJ));
                         indJ++;
                     }
                     else
@@ -141,6 +170,30 @@ namespace WallBuildChecker.WallBuildServices
             }
 
             return shapeIndexes;
+        }
+
+        private void PutShape(List<(int, int)> indexes, WallPattern wallPattern)
+        {
+            foreach (var index in indexes)
+            {
+                wallPattern.Pattern[index.Item1, index.Item2] = WallPart.Filled;
+            }
+        }
+
+        private bool IsItFilled(WallPattern wallPattern)
+        {
+            for (int i = 0; i < wallPattern.Pattern.GetLength(0); i++)
+            {
+                for (int j = 0; j < wallPattern.Pattern.GetLength(1); j++)
+                {
+                    if (wallPattern.Pattern[i, j] == WallPart.Fill)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
     }
 }

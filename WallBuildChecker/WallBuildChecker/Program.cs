@@ -47,7 +47,9 @@ namespace WallBuildChecker
             
             var wallBuildService = new WallBuildService();
 
-            wallBuildService.TryToBuildWall(wallPattern, bricks);
+            var wallStatus = wallBuildService.TryToBuildWall(wallPattern, bricks);
+
+            Console.WriteLine(wallStatus ? "The wall was built." : "The wall cannot be built.");
         }
     }
 }
